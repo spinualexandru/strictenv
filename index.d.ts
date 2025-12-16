@@ -20,10 +20,9 @@ export interface StrictEnvHandle {
 
     /**
      * Get access statistics for environment variable reads.
-     * Returns null if native module is not available.
      * Keys are in format "packageName:envVar"
      */
-    getAccessStats(): Record<string, number> | null;
+    getAccessStats(): Record<string, number>;
 }
 
 /**
@@ -114,11 +113,10 @@ export function disableStrictEnv(): void;
 
 /**
  * Get access statistics for environment variable reads.
- * Only available when the native module is loaded.
  *
- * @returns Object mapping "packageName:envVar" to access count, or null if native module unavailable
+ * @returns Object mapping "packageName:envVar" to access count
  */
-export function getAccessStats(): Record<string, number> | null;
+export function getAccessStats(): Record<string, number>;
 
 /**
  * Check if strict mode is currently enabled.
@@ -127,20 +125,11 @@ export function getAccessStats(): Record<string, number> | null;
  */
 export function isEnabled(): boolean;
 
-/**
- * Check if the native C++ module is available.
- * The native module provides better performance but is optional.
- *
- * @returns true if native module loaded successfully
- */
-export function hasNativeModule(): boolean;
-
 declare const _default: {
     enableStrictEnv: typeof enableStrictEnv;
     disableStrictEnv: typeof disableStrictEnv;
     getAccessStats: typeof getAccessStats;
     isEnabled: typeof isEnabled;
-    hasNativeModule: typeof hasNativeModule;
 };
 
 export default _default;

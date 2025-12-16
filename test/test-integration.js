@@ -247,12 +247,7 @@ describe('integration tests', { concurrency: false }, () => {
         }
     });
 
-    test('native module should be loaded', () => {
-        const dotnope = require('../index');
-        assert.strictEqual(dotnope.hasNativeModule(), true);
-    });
-
-    test('should track access stats with native module', () => {
+    test('should track access stats', () => {
         const fixturesDir = getUniqueFixturesDir();
         try {
             const { mainPkgPath, fakePackageDir } = setupMockProject(fixturesDir, {
@@ -278,10 +273,9 @@ describe('integration tests', { concurrency: false }, () => {
 
             // Check stats
             const stats = handle.getAccessStats();
-            if (stats) {
-                assert.ok('fake-package:TRACK_VAR' in stats, `Stats should contain fake-package:TRACK_VAR`);
-                assert.strictEqual(stats['fake-package:TRACK_VAR'], 3);
-            }
+            assert.ok(stats, 'getAccessStats should return stats object');
+            assert.ok('fake-package:TRACK_VAR' in stats, 'Stats should contain fake-package:TRACK_VAR');
+            assert.strictEqual(stats['fake-package:TRACK_VAR'], 3);
 
             dotnope.disableStrictEnv();
         } finally {

@@ -4,14 +4,12 @@ const {
     enableStrictEnv,
     disableStrictEnv,
     getAccessStats,
-    isEnabled,
-    hasNativeModule
+    isEnabled
 } = require('./lib/dotnope');
 
 module.exports = {
     enableStrictEnv,
     disableStrictEnv,
     getAccessStats,
-    isEnabled,
-    hasNativeModule
+    isEnabled
 };

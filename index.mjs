@@ -7,6 +7,5 @@ export const enableStrictEnv = dotnope.enableStrictEnv;
 export const disableStrictEnv = dotnope.disableStrictEnv;
 export const getAccessStats = dotnope.getAccessStats;
 export const isEnabled = dotnope.isEnabled;
-export const hasNativeModule = dotnope.hasNativeModule;
 
 export default dotnope;

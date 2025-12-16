@@ -1,0 +1,15 @@
+{
+  "name": "postinstall-protection-example",
+  "private": true,
+  "description": "Demonstrates dotnope protecting against malicious postinstall scripts",
+  "scripts": {
+    "demo:unprotected": "node demo-unprotected.js",
+    "demo:protected": "node demo-protected.js"
+  },
+  "environmentWhitelist": {
+    "malicious-package": {
+      "allowed": ["NODE_ENV", "FORCE_COLOR", "NO_COLOR", "TERM"],
+      "allowPeerDependencies": false
+    }
+  }
+}

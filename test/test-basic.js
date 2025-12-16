@@ -226,14 +226,6 @@ describe('dotnope', () => {
         });
     });
 
-    describe('hasNativeModule', () => {
-        test('should report native module availability', () => {
-            const dotnope = require('../index');
-            // This just tests the function exists and returns a boolean
-            const result = dotnope.hasNativeModule();
-            assert.strictEqual(typeof result, 'boolean');
-        });
-    });
 });
 
 describe('config-loader', () => {
