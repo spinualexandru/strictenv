@@ -217,7 +217,9 @@ describe('dotnope', () => {
 
                 assert.strictEqual(dotnope.isEnabled(), true);
 
-                handle.disable();
+                // Use token-protected disable
+                const token = handle.getToken();
+                handle.disable(token);
 
                 assert.strictEqual(dotnope.isEnabled(), false);
             } finally {
@@ -262,11 +264,15 @@ describe('config-loader', () => {
 
             assert.deepStrictEqual(config.axios, {
                 allowed: ['HTTP_PROXY'],
+                canWrite: [],
+                canDelete: [],
                 allowPeerDependencies: true
             });
 
             assert.deepStrictEqual(config.dotenv, {
                 allowed: ['VAR1', 'VAR2'],
+                canWrite: [],
+                canDelete: [],
                 allowPeerDependencies: false
             });
         } finally {

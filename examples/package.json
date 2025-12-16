@@ -3,8 +3,16 @@
   "private": true,
   "main": "app.js",
   "environmentWhitelist": {
+    "__options__": {
+      "failClosed": true,
+      "protectWrites": true,
+      "protectDeletes": true,
+      "protectEnumeration": true
+    },
     "legit-config": {
       "allowed": ["NODE_ENV", "PORT"],
+      "canWrite": [],
+      "canDelete": [],
       "allowPeerDependencies": false
     }
   }

@@ -3,7 +3,10 @@
 
 // Enable dotnope FIRST - before any other requires
 const dotnope = require('../index');
-dotnope.enableStrictEnv();
+const handle = dotnope.enableStrictEnv();
+
+// Store the token securely if you need to disable later
+const token = handle.getToken();
 
 // Set some fake secrets (in real apps these come from your environment)
 process.env.AWS_SECRET_ACCESS_KEY = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY';
@@ -44,4 +47,5 @@ try {
     console.log('Your secrets are safe.');
 }
 
-dotnope.disableStrictEnv();
+// Disable with token (required for security)
+handle.disable(token);

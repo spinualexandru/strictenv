@@ -7,8 +7,13 @@
     "demo:protected": "node demo-protected.js"
   },
   "environmentWhitelist": {
+    "__options__": {
+      "failClosed": true,
+      "protectWrites": true
+    },
     "malicious-package": {
       "allowed": ["NODE_ENV", "FORCE_COLOR", "NO_COLOR", "TERM"],
+      "canWrite": [],
       "allowPeerDependencies": false
     }
   }

@@ -271,11 +271,11 @@ describe('integration tests', { concurrency: false }, () => {
             fakePackage.getEnvVar('TRACK_VAR');
             fakePackage.getEnvVar('TRACK_VAR');
 
-            // Check stats
+            // Check stats (new format includes operation type)
             const stats = handle.getAccessStats();
             assert.ok(stats, 'getAccessStats should return stats object');
-            assert.ok('fake-package:TRACK_VAR' in stats, 'Stats should contain fake-package:TRACK_VAR');
-            assert.strictEqual(stats['fake-package:TRACK_VAR'], 3);
+            assert.ok('fake-package:TRACK_VAR:read' in stats, 'Stats should contain fake-package:TRACK_VAR:read');
+            assert.strictEqual(stats['fake-package:TRACK_VAR:read'], 3);
 
             dotnope.disableStrictEnv();
         } finally {

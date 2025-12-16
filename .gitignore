@@ -1,12 +1,12 @@
 # Dependencies (root only)
 /node_modules/
-
+native/node_modules
 # Keep examples/node_modules (fake packages for demo)
 !examples/node_modules/
 
 # Build artifacts
 /build/
-
+native/build
 # IDE
 .idea/
 *.swp

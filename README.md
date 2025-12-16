@@ -18,18 +18,38 @@ npm install dotnope
 
 ```javascript
 // At the very top of your entry point
-require('dotnope').enableStrictEnv();
+const dotnope = require('dotnope');
+const handle = dotnope.enableStrictEnv();
+
+// Store the token securely if you need to disable later
+const token = handle.getToken();
+
+// Your app code here...
+
+// When done (optional):
+handle.disable(token);
 ```
 
 ```json5
 // package.json - whitelist what each package can access
 {
   "environmentWhitelist": {
+    "__options__": {
+      "failClosed": true,
+      "protectWrites": true,
+      "protectDeletes": true,
+      "protectEnumeration": true
+    },
     "aws-sdk": {
-      "allowed": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"]
+      "allowed": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"],
+      "canWrite": [],
+      "canDelete": [],
+      "allowPeerDependencies": false
     },
     "dotenv": {
-      "allowed": ["*"]
+      "allowed": ["*"],
+      "canWrite": ["*"],
+      "canDelete": []
     }
   }
 }
@@ -74,21 +94,102 @@ ERR_DOTNOPE_UNAUTHORIZED: "compromised-pkg" cannot read "AWS_SECRET_ACCESS_KEY"
 
 The malware never gets your credentials. Your app crashes loudly instead of silently leaking secrets.
 
+## Security Features
+
+### Fail-Closed Mode (Default)
+Unknown callers are blocked by default. If dotnope can't determine who's accessing `process.env`, it denies access rather than allowing it.
+
+### Token-Protected Disable
+The `disable()` function requires the secret token returned by `enableStrictEnv()`. Malicious packages can't just call `disableStrictEnv()` to bypass protection.
+
+### Write Protection
+Control which packages can write to `process.env`, preventing environment pollution attacks.
+
+### Enumeration Protection
+Packages can only see the env vars they're allowed to access when using `Object.keys(process.env)` or similar.
+
+### Native Addon (Optional)
+For high-security environments, dotnope includes an optional C++ native addon that provides:
+- V8-level stack capture (immune to `Error.prepareStackTrace` manipulation)
+- Async context tracking via V8 PromiseHooks
+- Worker thread protection
+
+Build the native addon with:
+```bash
+npm run build:native
+```
+
 ## Config Options
+
+### Global Options (`__options__`)
+
+```json
+{
+  "environmentWhitelist": {
+    "__options__": {
+      "failClosed": true,
+      "protectWrites": true,
+      "protectDeletes": true,
+      "protectEnumeration": true
+    }
+  }
+}
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `failClosed` | `true` | Block access when caller can't be determined |
+| `protectWrites` | `true` | Enforce `canWrite` permissions |
+| `protectDeletes` | `true` | Enforce `canDelete` permissions |
+| `protectEnumeration` | `true` | Filter `Object.keys(process.env)` results |
+
+### Per-Package Options
 
 ```json
 {
   "environmentWhitelist": {
     "axios": {
       "allowed": ["HTTP_PROXY", "HTTPS_PROXY"],
+      "canWrite": ["HTTP_PROXY"],
+      "canDelete": [],
       "allowPeerDependencies": true
     }
   }
 }
 ```
 
-- `allowed`: Array of env var names, or `["*"]` for all
-- `allowPeerDependencies`: Grant same permissions to the package's dependencies
+| Option | Default | Description |
+|--------|---------|-------------|
+| `allowed` | `[]` | Env vars the package can read (`["*"]` for all) |
+| `canWrite` | `[]` | Env vars the package can write (`["*"]` for all) |
+| `canDelete` | `[]` | Env vars the package can delete (`["*"]` for all) |
+| `allowPeerDependencies` | `false` | Grant same permissions to dependencies |
+
+## API
+
+### `enableStrictEnv(options?)`
+
+Enables environment variable protection. Returns a handle object.
+
+```javascript
+const handle = dotnope.enableStrictEnv({
+    nativeMode: 'prefer'  // 'prefer' | 'require' | 'disable'
+});
+```
+
+### Handle Object
+
+```javascript
+// Get the secret token (store securely!)
+const token = handle.getToken();
+
+// Disable protection (requires token)
+handle.disable(token);
+
+// Get access statistics
+const stats = handle.getStats();
+// { "axios:HTTP_PROXY:read": 5, "dotenv:PORT:write": 2 }
+```
 
 ## Example
 
@@ -96,6 +197,23 @@ See [examples/](./examples) for a working demo with a fake malicious package.
 
 ```bash
 cd examples && node app.js
+```
+
+## Advanced: LD_PRELOAD Protection
+
+For protection against native C++ addons that call `getenv()` directly:
+
+```bash
+# Linux
+LD_PRELOAD=/path/to/dotnope_preload.so node app.js
+
+# macOS
+DYLD_INSERT_LIBRARIES=/path/to/dotnope_preload.dylib node app.js
+```
+
+Build the preload library:
+```bash
+cd native/preload && make
 ```
 
 ## License

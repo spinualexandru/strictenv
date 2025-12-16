@@ -1,12 +1,12 @@
 {
   "name": "dotnope",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "author": "Alex Spinu",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spinualexandru/dotnope.git"
   },
-  "description": "Strict environment variable access control for Node.js",
+  "description": "Strict environment variable access control for Node.js with optional native hardening",
   "main": "index.js",
   "module": "index.mjs",
   "exports": {
@@ -20,10 +20,16 @@
     "index.js",
     "index.mjs",
     "index.d.ts",
-    "lib/"
+    "lib/",
+    "native/src/",
+    "native/preload/",
+    "binding.gyp"
   ],
   "scripts": {
-    "test": "node --test 'test/**/*.js'"
+    "test": "node --test 'test/**/*.js'",
+    "build:native": "node-gyp rebuild",
+    "install": "node-gyp-build || true",
+    "prebuild": "prebuildify --napi --strip"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -33,7 +39,18 @@
     "env",
     "security",
     "whitelist",
-    "process.env"
+    "process.env",
+    "native",
+    "addon"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "node-addon-api": "^7.0.0",
+    "node-gyp-build": "^4.8.0"
+  },
+  "devDependencies": {
+    "node-gyp": "^10.0.0",
+    "prebuildify": "^6.0.0"
+  },
+  "optionalDependencies": {}
 }
