@@ -7,6 +7,7 @@ native/node_modules
 # Build artifacts
 /build/
 native/build
+native/preload/*.so
 /prebuilds/
 
 # Generated files

@@ -249,7 +249,7 @@ dotnope.enableStrictEnv({
 
 ## Advanced: LD_PRELOAD Protection
 
-For protection against native C++ addons that call `getenv()` directly:
+For protection against native C++ addons that call `getenv()` directly, dotnope provides an LD_PRELOAD library that intercepts libc's `getenv()` function.
 
 ### Using dotnope-run CLI (Recommended)
 
@@ -257,19 +257,49 @@ For protection against native C++ addons that call `getenv()` directly:
 npx dotnope-run node app.js
 ```
 
-### Manual LD_PRELOAD
+### Building the Preload Library
+
+**Requirements:** GCC and standard C development tools
 
 ```bash
-# Linux
-LD_PRELOAD=/path/to/dotnope_preload.so node app.js
+# Build the library
+cd native/preload
+make
 
-# macOS
-DYLD_INSERT_LIBRARIES=/path/to/dotnope_preload.dylib node app.js
+# Optional: Install system-wide
+sudo make install  # Installs to /usr/local/lib/
 ```
 
-Build the preload library:
+This creates `libdotnope_preload.so` in the `native/preload/` directory.
+
+### Manual LD_PRELOAD Usage
+
 ```bash
-cd native/preload && make
+# Linux - using local build
+LD_PRELOAD=./native/preload/libdotnope_preload.so \
+DOTNOPE_POLICY="AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,NODE_ENV" \
+node app.js
+
+# Linux - using installed library
+LD_PRELOAD=/usr/local/lib/libdotnope_preload.so node app.js
+
+# macOS (if you build a .dylib)
+DYLD_INSERT_LIBRARIES=/path/to/libdotnope_preload.dylib node app.js
+```
+
+### Preload Configuration
+
+| Environment Variable | Description |
+|---------------------|-------------|
+| `DOTNOPE_POLICY` | Comma-separated list of allowed env vars (use `*` for all) |
+| `DOTNOPE_LOG` | Enable logging: `1`, `stderr`, or a file path |
+
+```bash
+# Example: Only allow specific vars, log blocked access
+LD_PRELOAD=./native/preload/libdotnope_preload.so \
+DOTNOPE_POLICY="NODE_ENV,PORT,DATABASE_URL" \
+DOTNOPE_LOG=stderr \
+node app.js
 ```
 
 ## License

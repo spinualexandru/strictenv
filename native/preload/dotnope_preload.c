@@ -12,10 +12,11 @@
  * from a Unix domain socket for dynamic policy updates.
  */
 
-#define _GNU_SOURCE
+/* _GNU_SOURCE is defined via CFLAGS in Makefile */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <dlfcn.h>
 #include <pthread.h>
 #include <errno.h>
