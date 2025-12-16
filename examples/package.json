@@ -1,0 +1,11 @@
+{
+  "name": "strictenv-example",
+  "private": true,
+  "main": "app.js",
+  "environmentWhitelist": {
+    "legit-config": {
+      "allowed": ["NODE_ENV", "PORT"],
+      "allowPeerDependencies": false
+    }
+  }
+}

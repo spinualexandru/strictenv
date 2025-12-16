@@ -1,0 +1,64 @@
+{
+  "name": "strictenv",
+  "version": "1.0.0",
+  "author": "Alex Spinu",
+  "repository": {
+    "type": "git",
+    "url": "
+  },
+  "description": "Strict environment variable access control for Node.js",
+  "main": "index.js",
+  "module": "index.mjs",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.mjs",
+    "index.d.ts",
+    "lib/",
+    "src/",
+    "binding.gyp"
+  ],
+  "scripts": {
+    "install": "node-gyp rebuild || echo 'Native module build failed, using JS fallback'",
+    "build": "node-gyp rebuild",
+    "build:debug": "node-gyp rebuild --debug",
+    "clean": "node-gyp clean",
+    "test": "node --test 'test/**/*.js'",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "dependencies": {
+    "node-addon-api": "^8.1.0"
+  },
+  "devDependencies": {
+    "node-gyp": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "gypfile": true,
+  "keywords": [
+    "environment",
+    "env",
+    "security",
+    "whitelist",
+    "process.env",
+    "native",
+    "addon"
+  ],
+  "license": "MIT"
+}
