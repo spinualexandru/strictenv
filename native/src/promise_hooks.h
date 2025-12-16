@@ -47,6 +47,17 @@ void DisableInternal(Napi::Env env);
 Napi::Value GetAsyncContext(const Napi::CallbackInfo& info);
 
 /**
+ * Get the full async context stack
+ *
+ * Returns an array of all package names in the current async chain.
+ * Useful for debugging Promise.all() scenarios with multiple packages.
+ *
+ * @param info CallbackInfo (no parameters)
+ * @returns Array of package names or null
+ */
+Napi::Value GetAsyncContextStack(const Napi::CallbackInfo& info);
+
+/**
  * Check if promise hooks are currently enabled
  */
 bool IsEnabled();

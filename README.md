@@ -30,6 +30,12 @@ const token = handle.getToken();
 handle.disable(token);
 ```
 
+Or use the auto-register entry point to enable protection before any other code runs:
+
+```bash
+node -r dotnope/register your-app.js
+```
+
 ```json5
 // package.json - whitelist what each package can access
 {
@@ -212,6 +218,21 @@ dotnope.isRunningInMainThread();
 
 // Get serializable config for passing to workers
 dotnope.getSerializableConfig();
+```
+
+### Auto-Register Mode
+
+When using `node -r dotnope/register`, the handle and token are stored on `global.__dotnope`:
+
+```javascript
+// Access in your app after auto-register
+const { handle, token, emitWarnings } = global.__dotnope;
+
+// Emit security warnings (suppressed during auto-register)
+emitWarnings({ verbose: true });
+
+// Disable if needed
+handle.disable(token);
 ```
 
 ## Example

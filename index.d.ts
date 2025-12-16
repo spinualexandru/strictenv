@@ -7,6 +7,40 @@ export interface StrictEnvOptions {
      * If not specified, searches for package.json from current working directory.
      */
     configPath?: string;
+
+    /**
+     * Suppress security warnings on startup.
+     */
+    suppressWarnings?: boolean;
+
+    /**
+     * Show all warnings including info level (e.g., LD_PRELOAD status).
+     */
+    verbose?: boolean;
+
+    /**
+     * Allow enabling dotnope in worker threads.
+     * Required when calling enableStrictEnv() from a worker.
+     */
+    allowInWorker?: boolean;
+
+    /**
+     * Config passed from main thread to worker threads.
+     * Use with getSerializableConfig() in the main thread.
+     */
+    workerConfig?: object;
+
+    /**
+     * If false, disable strict load order checking.
+     * When true (default), throws if too many modules are loaded before enableStrictEnv().
+     */
+    strictLoadOrder?: boolean;
+
+    /**
+     * Maximum number of modules allowed to be loaded before enableStrictEnv().
+     * Default is 5. Only applies if strictLoadOrder is true.
+     */
+    maxPreloadedModules?: number;
 }
 
 /**
@@ -111,16 +145,58 @@ export interface EnvironmentWhitelistConfig {
 }
 
 /**
+ * Error codes thrown by dotnope
+ */
+export type DotnopeErrorCode =
+    | 'ERR_DOTNOPE_UNAUTHORIZED'
+    | 'ERR_DOTNOPE_UNKNOWN_CALLER'
+    | 'ERR_DOTNOPE_EVAL_CONTEXT'
+    | 'ERR_DOTNOPE_LOAD_ORDER'
+    | 'ERR_DOTNOPE_WORKER_NOT_ALLOWED'
+    | 'ERR_DOTNOPE_DEPRECATED';
+
+/**
  * Error thrown when unauthorized environment access is detected
  */
 export interface StrictEnvError extends Error {
-    code: 'ERR_DOTNOPE_UNAUTHORIZED' | 'ERR_DOTNOPE_UNKNOWN_CALLER';
+    code: DotnopeErrorCode;
     packageName?: string;
-    envVar: string;
-    operation: 'read' | 'write' | 'delete';
+    envVar?: string;
+    operation?: 'read' | 'write' | 'delete';
     fileName?: string;
     lineNumber?: number;
     functionName?: string;
+    loadedModules?: number;
+    maxPreloadedModules?: number;
+}
+
+/**
+ * Options for emitSecurityWarnings
+ */
+export interface SecurityWarningsOptions {
+    /**
+     * Force re-emission of warnings even if already emitted.
+     */
+    forceWarnings?: boolean;
+
+    /**
+     * Suppress all warnings.
+     */
+    suppressWarnings?: boolean;
+
+    /**
+     * Show info-level warnings (e.g., LD_PRELOAD status).
+     */
+    verbose?: boolean;
+}
+
+/**
+ * Security warning object returned by emitSecurityWarnings
+ */
+export interface SecurityWarning {
+    level: 'error' | 'warn' | 'info';
+    message: string;
+    detail?: string;
 }
 
 /**
@@ -185,7 +261,7 @@ export function enableStrictEnv(options?: StrictEnvOptions): StrictEnvHandle;
  * Restores original process.env behavior and clears all caches.
  *
  * @deprecated Use handle.disable(token) instead for security.
- * Direct disableStrictEnv() will be removed in a future version.
+ * This function throws ERR_DOTNOPE_DEPRECATED.
  */
 export function disableStrictEnv(): void;
 
@@ -203,11 +279,76 @@ export function getAccessStats(): Record<string, number>;
  */
 export function isEnabled(): boolean;
 
+/**
+ * Check if LD_PRELOAD protection is active.
+ * This provides protection against native addons calling getenv() directly.
+ *
+ * @returns true if LD_PRELOAD library is loaded
+ */
+export function isPreloadActive(): boolean;
+
+/**
+ * Emit security warnings about the current configuration.
+ * Warns about missing native addon, stack tampering, LD_PRELOAD status, etc.
+ *
+ * @param options - Options for warning emission
+ * @returns Array of warning objects that were checked
+ */
+export function emitSecurityWarnings(options?: SecurityWarningsOptions): SecurityWarning[];
+
+/**
+ * Check if running in the main thread (vs worker thread).
+ *
+ * @returns true if in main thread, false if in worker
+ */
+export function isRunningInMainThread(): boolean;
+
+/**
+ * Check if worker thread usage is allowed.
+ * Returns true if enableStrictEnv was called with allowInWorker: true.
+ *
+ * @returns true if workers are allowed
+ */
+export function isWorkerAllowed(): boolean;
+
+/**
+ * Get a serializable copy of the current configuration.
+ * Use this to pass config from main thread to worker threads.
+ *
+ * @returns Serializable config object to pass via workerData
+ *
+ * @example
+ * ```javascript
+ * // Main thread
+ * const dotnope = require('dotnope');
+ * dotnope.enableStrictEnv();
+ * const config = dotnope.getSerializableConfig();
+ *
+ * const worker = new Worker('./worker.js', {
+ *   workerData: { dotnopeConfig: config }
+ * });
+ *
+ * // Worker thread (worker.js)
+ * const { workerData } = require('worker_threads');
+ * const dotnope = require('dotnope');
+ * dotnope.enableStrictEnv({
+ *   allowInWorker: true,
+ *   workerConfig: workerData.dotnopeConfig
+ * });
+ * ```
+ */
+export function getSerializableConfig(): object;
+
 declare const _default: {
     enableStrictEnv: typeof enableStrictEnv;
     disableStrictEnv: typeof disableStrictEnv;
     getAccessStats: typeof getAccessStats;
     isEnabled: typeof isEnabled;
+    isPreloadActive: typeof isPreloadActive;
+    emitSecurityWarnings: typeof emitSecurityWarnings;
+    isRunningInMainThread: typeof isRunningInMainThread;
+    isWorkerAllowed: typeof isWorkerAllowed;
+    getSerializableConfig: typeof getSerializableConfig;
 };
 
 export default _default;

@@ -59,7 +59,7 @@ describe('dotnope', () => {
                 });
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: pkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: pkgPath });
 
                 assert.ok(handle);
                 assert.strictEqual(typeof handle.disable, 'function');
@@ -87,8 +87,8 @@ describe('dotnope', () => {
 
                 try {
                     const dotnope = require('../index');
-                    const handle = dotnope.enableStrictEnv({ configPath: pkgPath });
-                    dotnope.enableStrictEnv({ configPath: pkgPath });
+                    const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: pkgPath });
+                    dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: pkgPath });
 
                     assert.ok(warnMessages.some(m => m.includes('Already enabled')));
 
@@ -115,7 +115,7 @@ describe('dotnope', () => {
                 process.env.TEST_VAR = 'test-value';
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: pkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: pkgPath });
 
                 // Main app should always have access
                 assert.strictEqual(process.env.TEST_VAR, 'test-value');
@@ -142,7 +142,7 @@ describe('dotnope', () => {
                 process.env.TEST_VAR = 'allowed-value';
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: pkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: pkgPath });
 
                 // Should be able to access
                 assert.strictEqual(process.env.TEST_VAR, 'allowed-value');
@@ -170,7 +170,7 @@ describe('dotnope', () => {
                 process.env.ANOTHER_VAR = 'another-value';
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: pkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: pkgPath });
 
                 assert.strictEqual(process.env.ANY_VAR, 'any-value');
                 assert.strictEqual(process.env.ANOTHER_VAR, 'another-value');
@@ -196,7 +196,7 @@ describe('dotnope', () => {
                 process.env.OTHER_VAR = 'other';
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: pkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: pkgPath });
 
                 assert.strictEqual(process.env.TEST_VAR, 'test');
                 assert.strictEqual(process.env.OTHER_VAR, 'other');
@@ -219,7 +219,7 @@ describe('dotnope', () => {
                 });
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: pkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: pkgPath });
 
                 assert.strictEqual(dotnope.isEnabled(), true);
 
@@ -272,14 +272,18 @@ describe('config-loader', () => {
                 allowed: ['HTTP_PROXY'],
                 canWrite: [],
                 canDelete: [],
-                allowPeerDependencies: true
+                allowPeerDependencies: true,
+                peerDepthLimit: 1,
+                excludePeerDependencies: []
             });
 
             assert.deepStrictEqual(config.dotenv, {
                 allowed: ['VAR1', 'VAR2'],
                 canWrite: [],
                 canDelete: [],
-                allowPeerDependencies: false
+                allowPeerDependencies: false,
+                peerDepthLimit: 1,
+                excludePeerDependencies: []
             });
         } finally {
             cleanup(fixturesDir);

@@ -205,7 +205,7 @@ describe('Package Name Extraction Parity', () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -246,7 +246,7 @@ describe('Native vs JS Performance', () => {
             process.env.PERF_TEST = 'perf-value';
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -336,7 +336,7 @@ describe('Security Warnings', () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });

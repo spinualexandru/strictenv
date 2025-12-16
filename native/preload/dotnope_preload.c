@@ -20,11 +20,22 @@
 #include <dlfcn.h>
 #include <pthread.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdarg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 /* Original libc functions */
 static char* (*real_getenv)(const char*) = NULL;
 static int (*real_setenv)(const char*, const char*, int) = NULL;
 static int (*real_unsetenv)(const char*) = NULL;
+
+/* File access functions for /proc/*/environ protection */
+static int (*real_open)(const char*, int, ...) = NULL;
+static int (*real_openat)(int, const char*, int, ...) = NULL;
+static FILE* (*real_fopen)(const char*, const char*) = NULL;
+static int (*real_access)(const char*, int) = NULL;
+static int (*real___open_2)(const char*, int) = NULL;  /* FORTIFY_SOURCE variant */
 
 /* Thread-safe initialization */
 static pthread_once_t init_once = PTHREAD_ONCE_INIT;
@@ -154,6 +165,33 @@ static int is_allowed(const char* name) {
 }
 
 /**
+ * Check if a path is protected (e.g., /proc/*/environ)
+ * This prevents native code from reading environment variables directly from /proc
+ */
+static int is_protected_path(const char* path) {
+    if (!path) return 0;
+
+    /* Get our own PID for self-reference detection */
+    pid_t my_pid = getpid();
+    char self_environ[64];
+    snprintf(self_environ, sizeof(self_environ), "/proc/%d/environ", my_pid);
+
+    /* Block direct /proc/self/environ access */
+    if (strcmp(path, "/proc/self/environ") == 0) return 1;
+
+    /* Block /proc/PID/environ for our own process */
+    if (strcmp(path, self_environ) == 0) return 1;
+
+    /* Block any path containing /proc/ and environ together */
+    /* This catches variations like /proc/self/fd/../environ */
+    if (strstr(path, "/proc/") != NULL && strstr(path, "environ") != NULL) {
+        return 1;
+    }
+
+    return 0;
+}
+
+/**
  * Initialize by loading real libc functions
  */
 static void init_real_functions(void) {
@@ -161,9 +199,20 @@ static void init_real_functions(void) {
     real_setenv = dlsym(RTLD_NEXT, "setenv");
     real_unsetenv = dlsym(RTLD_NEXT, "unsetenv");
 
+    /* File access functions for /proc protection */
+    real_open = dlsym(RTLD_NEXT, "open");
+    real_openat = dlsym(RTLD_NEXT, "openat");
+    real_fopen = dlsym(RTLD_NEXT, "fopen");
+    real_access = dlsym(RTLD_NEXT, "access");
+    real___open_2 = dlsym(RTLD_NEXT, "__open_2");  /* May be NULL on some systems */
+
     if (!real_getenv || !real_setenv || !real_unsetenv) {
         fprintf(stderr, "[dotnope_preload] Failed to load libc functions\n");
         _exit(1);
+    }
+
+    if (!real_open || !real_fopen) {
+        fprintf(stderr, "[dotnope_preload] Warning: Failed to load file access functions\n");
     }
 
     load_policy();
@@ -229,6 +278,175 @@ int unsetenv(const char* name) {
     }
 
     return real_unsetenv(name);
+}
+
+/**
+ * Hooked open - block /proc/*/environ access
+ */
+int open(const char* pathname, int flags, ...) {
+    pthread_once(&init_once, init_real_functions);
+
+    if (!real_open) {
+        errno = ENOSYS;
+        return -1;
+    }
+
+    if (is_protected_path(pathname)) {
+        log_access("open", pathname, 0);
+        errno = EACCES;
+        return -1;
+    }
+
+    /* Handle variadic mode argument for O_CREAT */
+    if (flags & O_CREAT) {
+        va_list args;
+        va_start(args, flags);
+        mode_t mode = va_arg(args, mode_t);
+        va_end(args);
+        return real_open(pathname, flags, mode);
+    }
+
+    return real_open(pathname, flags);
+}
+
+/**
+ * Hooked open64 - 64-bit variant (often same as open on modern systems)
+ */
+int open64(const char* pathname, int flags, ...) {
+    pthread_once(&init_once, init_real_functions);
+
+    if (!real_open) {
+        errno = ENOSYS;
+        return -1;
+    }
+
+    if (is_protected_path(pathname)) {
+        log_access("open64", pathname, 0);
+        errno = EACCES;
+        return -1;
+    }
+
+    if (flags & O_CREAT) {
+        va_list args;
+        va_start(args, flags);
+        mode_t mode = va_arg(args, mode_t);
+        va_end(args);
+        return real_open(pathname, flags, mode);
+    }
+
+    return real_open(pathname, flags);
+}
+
+/**
+ * Hooked __open_2 - FORTIFY_SOURCE variant used by glibc
+ */
+int __open_2(const char* pathname, int flags) {
+    pthread_once(&init_once, init_real_functions);
+
+    if (is_protected_path(pathname)) {
+        log_access("__open_2", pathname, 0);
+        errno = EACCES;
+        return -1;
+    }
+
+    if (real___open_2) {
+        return real___open_2(pathname, flags);
+    }
+    /* Fallback to regular open */
+    if (real_open) {
+        return real_open(pathname, flags);
+    }
+
+    errno = ENOSYS;
+    return -1;
+}
+
+/**
+ * Hooked openat - block /proc/*/environ via dirfd-relative paths
+ */
+int openat(int dirfd, const char* pathname, int flags, ...) {
+    pthread_once(&init_once, init_real_functions);
+
+    if (!real_openat) {
+        errno = ENOSYS;
+        return -1;
+    }
+
+    if (is_protected_path(pathname)) {
+        log_access("openat", pathname, 0);
+        errno = EACCES;
+        return -1;
+    }
+
+    if (flags & O_CREAT) {
+        va_list args;
+        va_start(args, flags);
+        mode_t mode = va_arg(args, mode_t);
+        va_end(args);
+        return real_openat(dirfd, pathname, flags, mode);
+    }
+
+    return real_openat(dirfd, pathname, flags);
+}
+
+/**
+ * Hooked fopen - block /proc/*/environ via stdio
+ */
+FILE* fopen(const char* pathname, const char* mode) {
+    pthread_once(&init_once, init_real_functions);
+
+    if (!real_fopen) {
+        errno = ENOSYS;
+        return NULL;
+    }
+
+    if (is_protected_path(pathname)) {
+        log_access("fopen", pathname, 0);
+        errno = EACCES;
+        return NULL;
+    }
+
+    return real_fopen(pathname, mode);
+}
+
+/**
+ * Hooked fopen64 - 64-bit variant
+ */
+FILE* fopen64(const char* pathname, const char* mode) {
+    pthread_once(&init_once, init_real_functions);
+
+    if (!real_fopen) {
+        errno = ENOSYS;
+        return NULL;
+    }
+
+    if (is_protected_path(pathname)) {
+        log_access("fopen64", pathname, 0);
+        errno = EACCES;
+        return NULL;
+    }
+
+    return real_fopen(pathname, mode);
+}
+
+/**
+ * Hooked access - block checking if /proc/*/environ exists
+ */
+int access(const char* pathname, int mode) {
+    pthread_once(&init_once, init_real_functions);
+
+    if (!real_access) {
+        errno = ENOSYS;
+        return -1;
+    }
+
+    if (is_protected_path(pathname)) {
+        log_access("access", pathname, 0);
+        errno = EACCES;
+        return -1;
+    }
+
+    return real_access(pathname, mode);
 }
 
 /**

@@ -92,6 +92,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set("enablePromiseHooks", Napi::Function::New(env, PromiseHooks::Enable));
     exports.Set("disablePromiseHooks", Napi::Function::New(env, PromiseHooks::Disable));
     exports.Set("getAsyncContext", Napi::Function::New(env, PromiseHooks::GetAsyncContext));
+    exports.Set("getAsyncContextStack", Napi::Function::New(env, PromiseHooks::GetAsyncContextStack));
     exports.Set("getPromiseStats", Napi::Function::New(env, PromiseHooks::GetStats));
 
     // Isolate management

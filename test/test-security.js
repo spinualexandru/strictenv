@@ -119,7 +119,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 const { mainPkgPath } = setupMockProject(fixturesDir, {});
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 assert.throws(() => {
                     handle.disable('wrong-token');
@@ -142,7 +142,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 const { mainPkgPath } = setupMockProject(fixturesDir, {});
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 assert.throws(() => {
                     handle.disable(null);
@@ -164,7 +164,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 const { mainPkgPath } = setupMockProject(fixturesDir, {});
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 assert.throws(() => {
                     handle.disable('');
@@ -186,7 +186,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 const { mainPkgPath } = setupMockProject(fixturesDir, {});
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 assert.throws(() => {
                     dotnope.disableStrictEnv();
@@ -219,7 +219,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -253,7 +253,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -283,7 +283,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -316,7 +316,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -351,7 +351,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -386,7 +386,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -414,7 +414,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -445,7 +445,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -481,7 +481,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -528,7 +528,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -566,7 +566,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 // Main app should still work
                 assert.strictEqual(process.env.TEST_VAR, 'test');
@@ -588,7 +588,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -632,7 +632,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 }
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 delete require.cache[require.resolve(fakePackageDir)];
                 const fakePackage = require(fakePackageDir);
@@ -706,7 +706,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 // Main app access should work
                 assert.strictEqual(process.env.MAIN_APP_VAR, 'main-value');
@@ -730,7 +730,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 // Main app write should work
                 process.env.MAIN_WRITE_VAR = 'written-by-main';
@@ -756,7 +756,7 @@ describe('Security Tests', { concurrency: false }, () => {
                 process.chdir(fixturesDir);
 
                 const dotnope = require('../index');
-                const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+                const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
                 // Main app delete should work
                 delete process.env.MAIN_DELETE_VAR;
@@ -764,6 +764,208 @@ describe('Security Tests', { concurrency: false }, () => {
 
                 const token = handle.getToken();
                 handle.disable(token);
+            } finally {
+                cleanup(fixturesDir);
+            }
+        });
+    });
+
+    describe('Strict Load Order Protection', () => {
+        test('should throw if too many modules loaded before enableStrictEnv', () => {
+            const fixturesDir = getUniqueFixturesDir();
+            try {
+                const { mainPkgPath } = setupMockProject(fixturesDir, {});
+
+                const dotnope = require('../index');
+
+                // Set maxPreloadedModules very low to force the error
+                assert.throws(() => {
+                    dotnope.enableStrictEnv({
+                        configPath: mainPkgPath,
+                        maxPreloadedModules: 1  // Very low to trigger error
+                    });
+                }, (err) => {
+                    assert.strictEqual(err.code, 'ERR_DOTNOPE_LOAD_ORDER');
+                    assert.ok(err.loadedModules > 1, 'Should report loaded modules');
+                    return true;
+                });
+            } finally {
+                cleanup(fixturesDir);
+            }
+        });
+
+        test('should succeed with strictLoadOrder disabled', () => {
+            const fixturesDir = getUniqueFixturesDir();
+            try {
+                const { mainPkgPath } = setupMockProject(fixturesDir, {});
+
+                const dotnope = require('../index');
+
+                // Even with many modules loaded, this should succeed
+                const handle = dotnope.enableStrictEnv({
+                    configPath: mainPkgPath,
+                    strictLoadOrder: false
+                });
+
+                assert.ok(handle, 'Should return handle when strictLoadOrder disabled');
+
+                const token = handle.getToken();
+                handle.disable(token);
+            } finally {
+                cleanup(fixturesDir);
+            }
+        });
+
+        test('should succeed with higher maxPreloadedModules', () => {
+            const fixturesDir = getUniqueFixturesDir();
+            try {
+                const { mainPkgPath } = setupMockProject(fixturesDir, {});
+
+                const dotnope = require('../index');
+                const moduleCount = Object.keys(require.cache).length;
+
+                // Set maxPreloadedModules higher than current count
+                const handle = dotnope.enableStrictEnv({
+                    configPath: mainPkgPath,
+                    maxPreloadedModules: moduleCount + 10
+                });
+
+                assert.ok(handle, 'Should return handle with high maxPreloadedModules');
+
+                const token = handle.getToken();
+                handle.disable(token);
+            } finally {
+                cleanup(fixturesDir);
+            }
+        });
+    });
+
+    describe('Same Handle on Multiple Calls', () => {
+        test('should return same handle on repeated enableStrictEnv calls', () => {
+            const fixturesDir = getUniqueFixturesDir();
+            try {
+                const { mainPkgPath } = setupMockProject(fixturesDir, {});
+
+                const dotnope = require('../index');
+                const handle1 = dotnope.enableStrictEnv({
+                    configPath: mainPkgPath,
+                    strictLoadOrder: false
+                });
+
+                // Second call should return the SAME handle object
+                const handle2 = dotnope.enableStrictEnv({
+                    configPath: mainPkgPath,
+                    strictLoadOrder: false
+                });
+
+                assert.strictEqual(handle1, handle2, 'Should return same handle object');
+                assert.strictEqual(handle1.getToken(), handle2.getToken(), 'Tokens should match');
+
+                // Clean up
+                const token = handle1.getToken();
+                handle1.disable(token);
+            } finally {
+                cleanup(fixturesDir);
+            }
+        });
+    });
+
+    describe('Symlink Spoofing Protection', () => {
+        test('should validate package identity via realpath', () => {
+            const fixturesDir = getUniqueFixturesDir();
+            try {
+                const { mainPkgPath, fakePackageDir } = setupMockProject(fixturesDir, {
+                    'fake-package': {
+                        allowed: ['FAKE_VAR']
+                    }
+                });
+
+                process.env.FAKE_VAR = 'value';
+                process.chdir(fixturesDir);
+
+                // The validatePackageIdentity function should verify that
+                // the file path resolves to the expected package
+                const stackParser = require('../lib/stack-parser');
+
+                // Test validation function directly
+                const isValid = stackParser.validatePackageIdentity(
+                    path.join(fakePackageDir, 'index.js'),
+                    'fake-package'
+                );
+
+                assert.strictEqual(isValid, true, 'Valid path should pass validation');
+            } finally {
+                cleanup(fixturesDir);
+            }
+        });
+
+        test('should reject path claiming wrong package name', () => {
+            const fixturesDir = getUniqueFixturesDir();
+            try {
+                setupMockProject(fixturesDir, {});
+                process.chdir(fixturesDir);
+
+                const stackParser = require('../lib/stack-parser');
+
+                // Try to claim a file is from a different package
+                const fakePackagePath = path.join(fixturesDir, 'node_modules/fake-package/index.js');
+
+                // This should fail because the path says fake-package but we claim it's "trusted-package"
+                const isValid = stackParser.validatePackageIdentity(
+                    fakePackagePath,
+                    'trusted-package'  // Wrong package name
+                );
+
+                assert.strictEqual(isValid, false, 'Wrong package name should fail validation');
+            } finally {
+                cleanup(fixturesDir);
+            }
+        });
+
+        test('should allow __main__ without validation', () => {
+            const stackParser = require('../lib/stack-parser');
+
+            // Main app code doesn't need symlink validation
+            const isValid = stackParser.validatePackageIdentity(
+                '/some/app/path.js',
+                '__main__'
+            );
+
+            assert.strictEqual(isValid, true, '__main__ should always pass');
+        });
+    });
+
+    describe('allowPeerDependencies Depth Limit', () => {
+        test('should default to depth 1 (direct deps only)', () => {
+            const fixturesDir = getUniqueFixturesDir();
+            try {
+                // Create a package with allowPeerDependencies but no explicit depth
+                const mainPkgPath = path.join(fixturesDir, 'package.json');
+                fs.mkdirSync(fixturesDir, { recursive: true });
+                fs.writeFileSync(mainPkgPath, JSON.stringify({
+                    name: 'test-project',
+                    environmentWhitelist: {
+                        'some-package': {
+                            allowed: ['SECRET'],
+                            allowPeerDependencies: true
+                            // No peerDepthLimit - should default to 1
+                        }
+                    }
+                }, null, 2));
+
+                process.chdir(fixturesDir);
+
+                const configLoader = require('../lib/config-loader');
+                configLoader.clearCache();
+
+                const config = configLoader.loadConfig(mainPkgPath);
+
+                // Check that peerDepthLimit defaults to 1 in normalized config
+                assert.strictEqual(
+                    config['some-package'].peerDepthLimit,
+                    1,
+                    'peerDepthLimit should default to 1'
+                );
             } finally {
                 cleanup(fixturesDir);
             }

@@ -10,6 +10,7 @@
 #include <v8.h>
 #include <map>
 #include <set>
+#include <vector>
 #include <mutex>
 #include <string>
 
@@ -26,8 +27,47 @@ static bool g_enabled = false;
 static const size_t CLEANUP_THRESHOLD = 1000;  // Clean up after this many resolved promises
 static const size_t MAX_TRACKED_PROMISES = 10000;  // Hard limit to prevent memory explosion
 
-// Current async context (thread-local would be better but this is simpler)
-static thread_local std::string g_currentContext = "__main__";
+// Context stack for nested async operations (thread-local)
+// Using a stack allows proper attribution when Promise.all() has promises from multiple packages
+static thread_local std::vector<std::string> g_contextStack = {"__main__"};
+
+// Mutex for context stack operations (separate from g_mutex to reduce contention)
+static std::mutex g_contextStackMutex;
+
+/**
+ * Push a context onto the stack when entering an async handler
+ */
+static void pushContext(const std::string& context) {
+    std::lock_guard<std::mutex> lock(g_contextStackMutex);
+    g_contextStack.push_back(context);
+}
+
+/**
+ * Pop a context from the stack when leaving an async handler
+ */
+static void popContext() {
+    std::lock_guard<std::mutex> lock(g_contextStackMutex);
+    if (g_contextStack.size() > 1) {  // Always keep "__main__" at bottom
+        g_contextStack.pop_back();
+    }
+}
+
+/**
+ * Get the current context from top of stack
+ */
+static std::string getCurrentContext() {
+    std::lock_guard<std::mutex> lock(g_contextStackMutex);
+    return g_contextStack.empty() ? "__main__" : g_contextStack.back();
+}
+
+/**
+ * Reset the context stack to initial state
+ */
+static void resetContextStack() {
+    std::lock_guard<std::mutex> lock(g_contextStackMutex);
+    g_contextStack.clear();
+    g_contextStack.push_back("__main__");
+}
 
 /**
  * Clean up resolved promises that are no longer needed
@@ -137,18 +177,18 @@ static void PromiseHookCallback(
         }
 
         case v8::PromiseHookType::kBefore: {
-            // About to run promise handler - set context
+            // About to run promise handler - push context onto stack
             std::lock_guard<std::mutex> lock(g_mutex);
             auto it = g_promiseOrigins.find(promiseId);
             if (it != g_promiseOrigins.end()) {
-                g_currentContext = it->second;
+                pushContext(it->second);
             }
             break;
         }
 
         case v8::PromiseHookType::kAfter: {
-            // Finished running promise handler - restore context
-            g_currentContext = "__main__";
+            // Finished running promise handler - pop context from stack
+            popContext();
             break;
         }
 
@@ -217,8 +257,10 @@ void DisableInternal(Napi::Env env) {
         g_resolvedPromises.clear();
     }
 
+    // Reset the context stack
+    resetContextStack();
+
     g_enabled = false;
-    g_currentContext = "__main__";
 }
 
 /**
@@ -249,7 +291,27 @@ Napi::Value GetAsyncContext(const Napi::CallbackInfo& info) {
         return env.Null();
     }
 
-    return Napi::String::New(env, g_currentContext);
+    return Napi::String::New(env, getCurrentContext());
+}
+
+/**
+ * Get the full context stack (for debugging/Promise.all scenarios)
+ */
+Napi::Value GetAsyncContextStack(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+
+    if (!g_enabled) {
+        return env.Null();
+    }
+
+    std::lock_guard<std::mutex> lock(g_contextStackMutex);
+
+    Napi::Array result = Napi::Array::New(env, g_contextStack.size());
+    for (size_t i = 0; i < g_contextStack.size(); ++i) {
+        result.Set(static_cast<uint32_t>(i), Napi::String::New(env, g_contextStack[i]));
+    }
+
+    return result;
 }
 
 /**

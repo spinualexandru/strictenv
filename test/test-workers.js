@@ -126,7 +126,8 @@ describe('Worker Thread Protection', () => {
             const dotnope = require(${JSON.stringify(dotnopeModulePath)});
 
             try {
-                dotnope.enableStrictEnv();
+                // Note: strictLoadOrder: false because worker has modules loaded
+                dotnope.enableStrictEnv({ strictLoadOrder: false });
                 parentPort.postMessage({ success: false, message: 'Should have thrown' });
             } catch (err) {
                 parentPort.postMessage({
@@ -160,6 +161,7 @@ describe('Worker Thread Protection', () => {
             const dotnope = require('../index');
             process.chdir(fixturesDir);
             const handle = dotnope.enableStrictEnv({
+                strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -175,6 +177,7 @@ describe('Worker Thread Protection', () => {
 
                 try {
                     const handle = dotnope.enableStrictEnv({
+                        strictLoadOrder: false,
                         allowInWorker: true,
                         workerConfig: workerConfig,
                         suppressWarnings: true
@@ -219,6 +222,7 @@ describe('Worker Thread Protection', () => {
             const dotnope = require(${JSON.stringify(dotnopeModulePath)});
 
             const handle = dotnope.enableStrictEnv({
+                strictLoadOrder: false,
                 allowInWorker: true,
                 suppressWarnings: true
             });

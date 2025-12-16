@@ -1,6 +1,6 @@
 {
   "name": "dotnope",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "author": "Alex Spinu",
   "repository": {
     "type": "git",
@@ -13,7 +13,8 @@
     ".": {
       "import": "./index.mjs",
       "require": "./index.js"
-    }
+    },
+    "./register": "./register.js"
   },
   "types": "index.d.ts",
   "bin": {
@@ -23,6 +24,7 @@
     "index.js",
     "index.mjs",
     "index.d.ts",
+    "register.js",
     "lib/",
     "bin/",
     "scripts/",

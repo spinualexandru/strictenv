@@ -159,7 +159,7 @@ describe('Async Context Protection', () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -190,7 +190,7 @@ describe('Async Context Protection', () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -221,7 +221,7 @@ describe('Async Context Protection', () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -253,7 +253,7 @@ describe('Async Context Protection', () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -285,7 +285,7 @@ describe('Async Context Protection', () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -319,7 +319,7 @@ describe('Async Context Protection', () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });
@@ -348,7 +348,7 @@ describe('Promise Hooks Memory Management', () => {
 
             const dotnope = require('../index');
             const nativeBridge = require('../lib/native-bridge');
-            const handle = dotnope.enableStrictEnv({
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false,
                 configPath: mainPkgPath,
                 suppressWarnings: true
             });

@@ -102,7 +102,7 @@ describe('integration tests', { concurrency: false }, () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
             delete require.cache[require.resolve(fakePackageDir)];
             const fakePackage = require(fakePackageDir);
@@ -137,7 +137,7 @@ describe('integration tests', { concurrency: false }, () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
             delete require.cache[require.resolve(fakePackageDir)];
             const fakePackage = require(fakePackageDir);
@@ -167,7 +167,7 @@ describe('integration tests', { concurrency: false }, () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
             delete require.cache[require.resolve(fakePackageDir)];
             const fakePackage = require(fakePackageDir);
@@ -200,7 +200,7 @@ describe('integration tests', { concurrency: false }, () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
             delete require.cache[require.resolve(fakePackageDir)];
             const fakePackage = require(fakePackageDir);
@@ -232,7 +232,7 @@ describe('integration tests', { concurrency: false }, () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
             delete require.cache[require.resolve(fakePackageDir)];
             const fakePackage = require(fakePackageDir);
@@ -266,7 +266,7 @@ describe('integration tests', { concurrency: false }, () => {
             process.chdir(fixturesDir);
 
             const dotnope = require('../index');
-            const handle = dotnope.enableStrictEnv({ configPath: mainPkgPath });
+            const handle = dotnope.enableStrictEnv({ strictLoadOrder: false, configPath: mainPkgPath });
 
             delete require.cache[require.resolve(fakePackageDir)];
             const fakePackage = require(fakePackageDir);
